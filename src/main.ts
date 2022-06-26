@@ -1,4 +1,10 @@
-import { init, render } from "./examples/_casque";
+import Game from "./salad/Game";
+import "./style.css";
 
-init();
-render();
+const app = document.querySelector<HTMLDivElement>("#app")!;
+
+const game = new Game()
+
+game.displayRenderer(app);
+
+requestAnimationFrame(() => game.render());
