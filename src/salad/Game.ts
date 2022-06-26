@@ -1,12 +1,13 @@
 import * as THREE from "three";
 import { PerspectiveCamera, Scene, WebGLRenderer } from "three";
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls";
+import { Ammo } from "../Ammo";
 
 export default class Game {
 	private readonly camera: PerspectiveCamera;
 	private readonly scene: Scene;
 	private renderer: WebGLRenderer;
-	private rigidBodies: any[];
+	private physicsWorld: Ammo.btSoftRigidDynamicsWorld;
 
 	constructor() {
 		this.camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.25, 20);
@@ -31,6 +32,22 @@ export default class Game {
 		window.addEventListener("resize", this.onWindowResize);
 	}
 
+	async initPhysics() {
+		const gravityConstant = -9.8 * 100;
+		this.rigidBodies = [];
+
+		const collisionConfiguration = new Ammo.btSoftBodyRigidBodyCollisionConfiguration();
+		const dispatcher = new Ammo.btCollisionDispatcher(collisionConfiguration);
+		const broadphase = new Ammo.btDbvtBroadphase();
+		const solver = new Ammo.btSequentialImpulseConstraintSolver();
+		const softBodySolver = new Ammo.btDefaultSoftBodySolver();
+		this.physicsWorld = new Ammo.btSoftRigidDynamicsWorld(dispatcher, broadphase, solver, collisionConfiguration, softBodySolver);
+		this.physicsWorld.setGravity(new Ammo.btVector3(0, gravityConstant, 0));
+		this.physicsWorld.getWorldInfo().set_m_gravity(new Ammo.btVector3(0, gravityConstant, 0));
+
+		this.transformAux1 = new Ammo.btTransform();
+	}
+
 	private onWindowResize() {
 		this.camera.aspect = window.innerWidth / window.innerHeight;
 		this.camera.updateProjectionMatrix();
@@ -38,6 +55,11 @@ export default class Game {
 		this.renderer.setSize(window.innerWidth, window.innerHeight);
 
 		this.render();
+	}
+
+	public add(mesh: THREE.Mesh, body: any) {
+		this.physicsWorld.addRigidBody(body);
+		this.scene.add(mesh);
 	}
 
 	displayRenderer(container: HTMLElement) {
