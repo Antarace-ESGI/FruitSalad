@@ -2,20 +2,41 @@
 <html lang="en">
 
 <head>
-    <title>three.js webgl - geometry - cube</title>
+    <title>FruitSalad</title>
     <meta charset="utf-8">
-    <meta
-            name="viewport"
-            content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0"
-    >
-    <link
-            type="text/css"
-            rel="stylesheet"
-            href="main.css"
-    >
+    <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+    <link type="text/css" rel="stylesheet" href="main.css">
 </head>
 
 <body>
+
+<div id="info">
+    <div id="price">0€</div>
+
+    <div id="plateSelector">
+        <button id="small">
+            Small plate
+        </button>
+
+        <button id="medium">
+            Medium plate
+        </button>
+
+        <button id="large">
+            Large plate
+        </button>
+    </div>
+
+    <div id="compositor" style="display: none">
+        <button id="strawberry">
+            Add strawberry
+        </button>
+
+        <button id="banana">
+            Add banana
+        </button>
+    </div>
+</div>
 
 <canvas id="threejs"></canvas>
 
@@ -23,78 +44,7 @@
 <script src="threejs/dat.gui.min.js"></script>
 <script src="threejs/js/libs/ammo.wasm.js"></script>
 
-<script type="module">
-	import * as THREE from "./threejs/three.module.js";
-	import {Reflector} from "./threejs/jsm/objects/Reflector.js";
-	import {World} from "./scripts/main.js";
-
-	function startScene() {
-		Ammo().then(function (AmmoLib) {
-			Ammo = AmmoLib;
-			init();
-		});
-	}
-
-	function init() {
-		const canvas = document.getElementById("threejs");
-		const world = new World(canvas);
-
-		window.onresize = () => world.onWindowResize();
-
-		const stats = new Stats();
-		stats.showPanel(1); // 0: fps, 1: ms, 2: mb, 3+: custom
-		document.body.appendChild(stats.dom);
-
-		const {spotLight, lightHelper} = world.createSpotLight(1600, 0, 1000);
-		world.createSpotLight(200, 0, 200, 0, 0, 0, {distance: 1000});
-
-		world.buildSpotLightGui(spotLight, lightHelper);
-
-        // Create the bowl
-		world.createShape({
-			position: [0, 0, 0],
-			size: [30, 30, 30],
-			image: "textures/banana.png",
-			geometry: "Bowl",
-			rigidBody: true,
-            mass: 0,
-		});
-
-		// Create a cube for testing purposes
-		world.createShape({
-			position: [5, 50, 0],
-			size: [10, 10, 10],
-			image: "textures/banana.png",
-			geometry: "BoxBufferGeometry",
-			rigidBody: true,
-		});
-
-		/**
-		 * Animate the world
-		 */
-
-		function animate() {
-			stats.begin();
-			const delta = world.clock.getDelta();
-			world.renderer.render(world.scene, world.camera);
-
-			// Animate spotlight
-			/*if (spotLight !== undefined) {
-                spotLight.position.y = (spotLight.position.y % 1000) + 1;
-            }*/
-
-			world.animate(delta);
-
-			stats.end();
-
-			requestAnimationFrame(animate);
-		}
-
-		requestAnimationFrame(animate);
-	}
-
-	startScene();
-</script>
+<script type="module" src="scripts/main.mjs"></script>
 
 </body>
 

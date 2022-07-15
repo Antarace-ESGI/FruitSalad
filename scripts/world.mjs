@@ -1,6 +1,7 @@
 import * as THREE from '../threejs/three.module.js';
 import {ColladaLoader} from '../threejs/jsm/loaders/ColladaLoader.js';
 import {OrbitControls} from "../threejs/jsm/controls/OrbitControls.js";
+import {createRigidBody} from "./utils.mjs";
 
 export class World {
 	/**
@@ -24,7 +25,7 @@ export class World {
 		// Create camera
 		/*this.camera.position.set(1600, 0, 1000);
 		this.camera.lookAt(0, 0, 0);*/
-		this.camera.position.set(0, 20, 100);
+		this.camera.position.set(0, 100, 30);
 
 		// Setup the renderer
 		this.renderer.setPixelRatio(window.devicePixelRatio);
@@ -84,94 +85,11 @@ export class World {
 		this.transformAux1 = new Ammo.btTransform();
 	}
 
-	/**
-	 *
-	 * @param {THREE.Mesh} threeObject
-	 * @param {Ammo.btBoxShape} physicsShape
-	 * @param {number} mass
-	 * @param {THREE.Vector3} pos
-	 * @param {THREE.Quaternion} quat
-	 */
-	createRigidBody(threeObject, physicsShape, mass, pos, quat) {
-		threeObject.position.copy(pos);
-		threeObject.quaternion.copy(quat);
-
-		const transform = new Ammo.btTransform();
-		transform.setIdentity();
-		transform.setOrigin(new Ammo.btVector3(pos.x, pos.y, pos.z));
-		transform.setRotation(new Ammo.btQuaternion(quat.x, quat.y, quat.z, quat.w));
-		const motionState = new Ammo.btDefaultMotionState(transform);
-
-		const localInertia = new Ammo.btVector3(0, 0, 0);
-		physicsShape.calculateLocalInertia(mass, localInertia);
-
-		const rbInfo = new Ammo.btRigidBodyConstructionInfo(mass, motionState, physicsShape, localInertia);
-		const body = new Ammo.btRigidBody(rbInfo);
-
-		threeObject.userData.physicsBody = body;
-
-		if (mass > 0) {
-			this.rigidBodies.push(threeObject);
-
-			// Disable deactivation
-			body.setActivationState(4);
-		}
-
-		this.physicsWorld.addRigidBody(body);
-
-		return body;
-	}
-
 	onWindowResize() {
 		this.camera.aspect = window.innerWidth / window.innerHeight;
 		this.camera.updateProjectionMatrix();
 
 		this.renderer.setSize(window.innerWidth, window.innerHeight);
-	}
-
-	/*
-	 * Collada
-	 */
-
-	/**
-	 * Create and add a new model to the scene
-	 * @param {string} file File path to the .dae file
-	 */
-	createCollada(file) {
-		return new Promise((resolve, reject) => {
-			this.loader.load(file, (collada) => {
-				const avatar = collada.scene;
-				const animations = avatar.animations;
-
-				avatar.traverse((node) => {
-					if (node.isSkinnedMesh) {
-						node.frustumCulled = false;
-						node.castShadow = true;
-						node.receiveShadow = true;
-					}
-				});
-
-				const mixer = new THREE.AnimationMixer(avatar);
-				mixer.clipAction(animations[0]).play();
-
-				resolve({mixer: mixer, avatar: avatar});
-			});
-		});
-	}
-
-	colladaPhysicBody(avatar, size) {
-		// Physic body
-		const position = new THREE.Vector3(avatar.position.x, avatar.position.y, avatar.position.z),
-			target = new THREE.Vector3(...size);
-		const quaternion = new THREE.Quaternion(0, 0, 0, 1);
-
-		const box = new THREE.Box3().setFromCenterAndSize(position, target);
-		box.getSize(target);
-
-		const shape = new Ammo.btBoxShape(new Ammo.btVector3(target.x * 0.5, target.y * 0.5, target.z * 0.5));
-		shape.setMargin(0);
-
-		return this.createRigidBody(avatar, shape, 1, position, quaternion);
 	}
 
 	animate(delta) {
@@ -217,7 +135,7 @@ export class World {
 		spotLight.angle = Math.PI / 4;
 		spotLight.penumbra = 0.1;
 		spotLight.decay = 2;
-		spotLight.distance = options?.distance ?? 20000;
+		spotLight.distance = options?.distance ?? 200;
 
 		spotLight.castShadow = true;
 		spotLight.shadow.mapSize.width = 2048;
@@ -242,57 +160,6 @@ export class World {
 		lightHelper.update();
 
 		this.renderer.render(this.scene, this.camera);
-	}
-
-	buildSpotLightGui(spotLight, lightHelper) {
-		const gui = new dat.GUI();
-
-		const params = {
-			'light color': spotLight.color.getHex(),
-			intensity: spotLight.intensity,
-			distance: spotLight.distance,
-			angle: spotLight.angle,
-			penumbra: spotLight.penumbra,
-			decay: spotLight.decay,
-			focus: spotLight.shadow.focus
-		};
-
-		gui.addColor(params, 'light color').onChange((val) => {
-			spotLight.color.setHex(val);
-			this.render(lightHelper);
-		});
-
-		gui.add(params, 'intensity', 0, 2).onChange((val) => {
-			spotLight.intensity = val;
-			this.render(lightHelper);
-		});
-
-		gui.add(params, 'distance', 2000, 5000).onChange((val) => {
-			spotLight.distance = val;
-			this.render(lightHelper);
-		});
-
-		gui.add(params, 'angle', 0, Math.PI / 3).onChange((val) => {
-			spotLight.angle = val;
-			this.render(lightHelper);
-		});
-
-		gui.add(params, 'penumbra', 0, 1).onChange((val) => {
-			spotLight.penumbra = val;
-			this.render(lightHelper);
-		});
-
-		gui.add(params, 'decay', 1, 2).onChange((val) => {
-			spotLight.decay = val;
-			this.render(lightHelper);
-		});
-
-		gui.add(params, 'focus', 0, 1).onChange((val) => {
-			spotLight.shadow.focus = val;
-			this.render(lightHelper);
-		});
-
-		gui.open();
 	}
 
 	/*
@@ -365,7 +232,8 @@ export class World {
 
 			shape.setMargin(0.05);
 
-			body = this.createRigidBody(mesh, shape, options.mass ?? volume, vector3, quaternion);
+			body = createRigidBody(this.physicsWorld, mesh, shape, options.mass ?? volume, vector3, quaternion);
+			this.rigidBodies.push(mesh);
 		}
 
 		this.scene.add(mesh);
