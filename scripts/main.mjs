@@ -1,12 +1,7 @@
 import {World} from "./world.mjs";
-import {addModelToWorld, click, createPlate} from "./utils.mjs";
+import {addSlice, click, createPlate, updatePriceDisplay} from "./utils.mjs";
 
 let world, plateSize;
-
-function updatePriceDisplay(amount) {
-	const price = document.querySelector("#price");
-	price.innerText = parseFloat(price.innerText) + amount + "€";
-}
 
 function startScene() {
 	Ammo().then(function (AmmoLib) {
@@ -17,21 +12,8 @@ function startScene() {
 		document.querySelector("#compositor").style.display = "block";
 
 		// Register events
-		click("#strawberry", () => {
-			const randomIndex = Math.floor(Math.random() * 3 + 1);
-			const x = Math.random() * plateSize - plateSize / 2 - 1;
-			const y = Math.random() * plateSize - plateSize / 2 - 1;
-			addModelToWorld(world, `strawberry_slice_${randomIndex}`, [x, 5, y]);
-			updatePriceDisplay(0.5);
-		})
-
-		click("#banana", () => {
-			const randomIndex = Math.floor(Math.random() * 3 + 1);
-			const x = Math.random() * plateSize - plateSize / 2 - 1;
-			const y = Math.random() * plateSize - plateSize / 2 - 1;
-			addModelToWorld(world, `banana_slice_${randomIndex}`, [x, 5, y]);
-			updatePriceDisplay(0.75);
-		})
+		click("#strawberry", addSlice, "strawberry", 0.5, plateSize, world);
+		click("#banana", addSlice, "banana", 0.75, plateSize, world);
 	});
 }
 
@@ -39,6 +21,7 @@ function init() {
 	const canvas = document.getElementById("threejs");
 	world = new World(canvas);
 
+	// Register resize event
 	window.onresize = () => world.onWindowResize();
 
 	// Add some showoff lights

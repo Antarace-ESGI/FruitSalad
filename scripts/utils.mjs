@@ -156,6 +156,36 @@ export function addModelToWorld(world, filename, position = [0, 0, 0]) {
 		});
 }
 
-export function click(selector, callback) {
-	document.querySelector(selector).addEventListener("click", callback);
+/**
+ * Registers a click event on an element
+ * @param {string} selector Selector of the element to add the callback to
+ * @param {function} callback Function to be called on click
+ * @param {*} args Arguments to pass to the callback
+ */
+export function click(selector, callback, ...args) {
+	document.querySelector(selector).addEventListener("click", () => callback(...args));
+}
+
+/**
+ * Update the price displayed on the web page
+ * @param {number} amount
+ */
+export function updatePriceDisplay(amount) {
+	const price = document.querySelector("#price");
+	price.innerText = parseFloat(price.innerText) + amount + "€";
+}
+
+/**
+ * Add a new slice of fruit to the scene and updates the price
+ * @param {string} fruit Name of the fruit to add
+ * @param {number} price Price of the slice of fruit
+ * @param {number} plateSize Size of the place selected
+ * @param {World} world World to add the slice in
+ */
+export function addSlice(fruit, price, plateSize, world) {
+	const randomIndex = Math.floor(Math.random() * 3 + 1);
+	const x = Math.random() * plateSize - plateSize / 2 - 1;
+	const y = Math.random() * plateSize - plateSize / 2 - 1;
+	addModelToWorld(world, `${fruit}_slice_${randomIndex}`, [x, 5, y]);
+	updatePriceDisplay(price);
 }

@@ -92,6 +92,10 @@ export class World {
 		this.renderer.setSize(window.innerWidth, window.innerHeight);
 	}
 
+	/**
+	 * Function called on each frame
+	 * @param delta
+	 */
 	animate(delta) {
 		this.controls.update();
 		this.renderer.render(this.scene, this.camera);
@@ -153,16 +157,6 @@ export class World {
 	}
 
 	/*
-	 * GUI
-	 */
-
-	render(lightHelper) {
-		lightHelper.update();
-
-		this.renderer.render(this.scene, this.camera);
-	}
-
-	/*
 	 * Create and add a new shape to the world
 	 */
 
@@ -220,8 +214,6 @@ export class World {
 		if (options.geometry !== 'SphereGeometry' && options.opacity !== 0) {
 			mesh.castShadow = true;
 			mesh.receiveShadow = true;
-			/*} else {
-				mesh.material.side = THREE.DoubleSide;*/
 		}
 
 		let body;
