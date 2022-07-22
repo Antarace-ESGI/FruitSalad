@@ -67,11 +67,13 @@ export function loadModel(loader, file) {
 
 /**
  * Create a new physic body for a collada
+ * @param physicsWorld
  * @param model
+ * @param isStatic
  * @param size
  * @returns {*}
  */
-export function modelPhysicBody(physicsWorld, model, size, isStatic = false) {
+export function modelPhysicBody(physicsWorld, model, size, isStatic) {
 	// Physic body
 	const position = new THREE.Vector3(model.position.x, model.position.y, model.position.z);
 	const target = new THREE.Vector3(...size);
@@ -83,7 +85,7 @@ export function modelPhysicBody(physicsWorld, model, size, isStatic = false) {
 	const shape = new Ammo.btBoxShape(new Ammo.btVector3(target.x * 0.5, target.y * 0.5, target.z * 0.5));
 	shape.setMargin(0);
 
-	return createRigidBody(physicsWorld, model, shape, (isStatic == false) ? 1 : 0, position, quaternion);
+	return createRigidBody(physicsWorld, model, shape, (isStatic === false) ? 1 : 0, position, quaternion);
 }
 
 /**
@@ -91,27 +93,71 @@ export function modelPhysicBody(physicsWorld, model, size, isStatic = false) {
  * @param {number} radius Size of the plate
  */
 export function createPlate(world, radius = 10) {
-	// Create the box
+
 	addModelToWorld(world,"box_down",[0,0,0], true);
+	world.createShape({
+		position: [0, 0, 0],
+		size: [10, .5, 15],
+		geometry: "BoxBufferGeometry",
+		rigidBody: true,
+		mass: 0,
+	});
+
+	// Back
 	addModelToWorld(world,"box_back",[-5.5,0,0.5],true);
+	world.createShape({
+		position: [-5, 0, 0],
+		size: [0.5, 10, 15],
+		geometry: "BoxBufferGeometry",
+		rigidBody: true,
+		mass: 0,
+	});
+
+	// Front
 	addModelToWorld(world,"box_front",[4,0,0.5],true);
+	world.createShape({
+		position: [5, 0, 0],
+		size: [0.5, 10, 15],
+		geometry: "BoxBufferGeometry",
+		rigidBody: true,
+		mass: 0,
+	});
+
+	// Left
 	addModelToWorld(world, "box_left", [0,0,-7],true);
+	world.createShape({
+		position: [0, 0, -7],
+		size: [10, 10, 0.5],
+		geometry: "BoxBufferGeometry",
+		rigidBody: true,
+		mass: 0,
+	});
+
+	// Right
 	addModelToWorld(world,"box_right", [0,0,7.5],true);
-	
+	world.createShape({
+		position: [0, 0, 7.5],
+		size: [10, 10, 0.5],
+		geometry: "BoxBufferGeometry",
+		rigidBody: true,
+		mass: 0,
+	});
 }
 
 /**
  * @param {World} world
  * @param {string} filename
  * @param {number[]} position
+ * @param isStatic
+ * @param size
  */
-export function addModelToWorld(world, filename, position = [0, 0, 0], isStatic = false) {
+export function addModelToWorld(world, filename, position = [0, 0, 0],  isStatic) {
 	loadModel(world.loader, `/models/${filename}.glb`)
 		.then(model => {
 			model.scale.set(1, 1, 1);
 			model.position.set(...position);
 			world.scene.add(model);
-			modelPhysicBody(world.physicsWorld, model, [2, 2, 2], isStatic);
+			modelPhysicBody(world.physicsWorld, model,[2,2,2], isStatic);
 			world.rigidBodies.push(model);
 		});
 }
@@ -147,6 +193,6 @@ export function addSlice(fruit, price, plateSize, world, slices = 3) {
 	const randomIndex = Math.floor(Math.random() * slices + 1);
 	const x = Math.random() * plateSize - plateSize / 2 - 1;
 	const y = Math.random() * plateSize - plateSize / 2 - 1;
-	addModelToWorld(world, `${fruit}_slice_${randomIndex}`, [x, 5, y]);
+	addModelToWorld(world, `${fruit}_slice_${randomIndex}`, [x, 5, y], false);
 	updatePriceDisplay(price);
 }
