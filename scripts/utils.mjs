@@ -91,60 +91,12 @@ export function modelPhysicBody(physicsWorld, model, size, isStatic = false) {
  * @param {number} radius Size of the plate
  */
 export function createPlate(world, radius = 10) {
-	const wallThickness = 1;
-	const height = 5;
-
-	const heightOffset = height / 2 - wallThickness / 2;
-	const wallOffset = radius / 2 - wallThickness / 2;
-
-	// Create the bowl
-	/*
-	world.createShape({
-		position: [wallOffset, 0, 0],
-		size: [wallThickness, height, radius],
-		image: "textures/bowl.png",
-		geometry: "BoxBufferGeometry",
-		rigidBody: true,
-		mass: 0,
-	});
-	world.createShape({
-		position: [-wallOffset, 0, 0],
-		size: [wallThickness, height, radius],
-		image: "textures/bowl.png",
-		geometry: "BoxBufferGeometry",
-		rigidBody: true,
-		mass: 0,
-	});
-	world.createShape({
-		position: [0, 0, wallOffset],
-		size: [radius, height, wallThickness],
-		image: "textures/bowl.png",
-		geometry: "BoxBufferGeometry",
-		rigidBody: true,
-		mass: 0,
-	});
-	world.createShape({
-		position: [0, 0, -wallOffset],
-		size: [radius, height, wallThickness],
-		image: "textures/bowl.png",
-		geometry: "BoxBufferGeometry",
-		rigidBody: true,
-		mass: 0,
-	});
-	world.createShape({
-		position: [0, -heightOffset, 0],
-		size: [radius, wallThickness, radius],
-		image: "textures/bowl.png",
-		geometry: "BoxBufferGeometry",
-		rigidBody: true,
-		mass: 0,
-	});
-	*/
-	addModelToWorld(world,"box_left",[0,0,0], true);
-	addModelToWorld(world,"box_back",[0,0,0],true);
-	addModelToWorld(world,"box_front",[0,0,0],true);
-	addModelToWorld(world, "box_left", [0,0,0],true);
-	addModelToWorld(world,"box_right", [0,0,0],true);
+	// Create the box
+	addModelToWorld(world,"box_down",[0,0,0], true);
+	addModelToWorld(world,"box_back",[-5.5,0,0.5],true);
+	addModelToWorld(world,"box_front",[4,0,0.5],true);
+	addModelToWorld(world, "box_left", [0,0,-7],true);
+	addModelToWorld(world,"box_right", [0,0,7.5],true);
 	
 }
 
