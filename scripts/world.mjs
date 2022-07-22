@@ -9,14 +9,9 @@ export class World {
 	 */
 	constructor(canvas) {
 		this.scene = new THREE.Scene();
-		this.camera = new THREE.PerspectiveCamera(70, window.innerWidth / window.innerHeight, 1, 10000);
+		this.camera = new THREE.PerspectiveCamera(70, canvas.offsetWidth / canvas.offsetHeight, 1, 10000);
 		this.camera.rotation.order = 'YXZ';
-
-		if (canvas) {
-			this.renderer = new THREE.WebGLRenderer({antialias: true, canvas: canvas});
-		} else {
-			this.renderer = new THREE.WebGLRenderer({antialias: true});
-		}
+		this.renderer = new THREE.WebGLRenderer({antialias: true, canvas: canvas, alpha: true});
 
 		// Ambient light
 		const light = new THREE.AmbientLight(0x404040); // soft white light
@@ -25,17 +20,17 @@ export class World {
 		// Create camera
 		/*this.camera.position.set(1600, 0, 1000);
 		this.camera.lookAt(0, 0, 0);*/
-		this.camera.position.set(0, 100, 30);
+		this.camera.position.set(30, 30, 30);
 
 		// Setup the renderer
 		this.renderer.setPixelRatio(window.devicePixelRatio);
-		this.renderer.setSize(window.innerWidth, window.innerHeight);
+		this.renderer.setSize(canvas.offsetWidth, canvas.offsetHeight);
 		this.renderer.shadowMap.enabled = true;
 		this.renderer.shadowMap.type = THREE.PCFSoftShadowMap;
 		this.renderer.outputEncoding = THREE.sRGBEncoding;
 
 		// Add the renderer element to webpage
-		document.body.appendChild(this.renderer.domElement);
+		canvas.parentElement.appendChild(this.renderer.domElement);
 
 		this.controls = new OrbitControls(this.camera, this.renderer.domElement);
 
