@@ -73,7 +73,7 @@ export function loadModel(loader, file) {
  * @param size
  * @returns {*}
  */
-export function modelPhysicBody(physicsWorld, model, isStatic, size) {
+export function modelPhysicBody(physicsWorld, model, size, isStatic) {
 	// Physic body
 	const position = new THREE.Vector3(model.position.x, model.position.y, model.position.z);
 	const target = new THREE.Vector3(...size);
@@ -93,13 +93,55 @@ export function modelPhysicBody(physicsWorld, model, isStatic, size) {
  * @param {number} radius Size of the plate
  */
 export function createPlate(world, radius = 10) {
-	// Create the box
-	addModelToWorld(world,"box_down",[0,0,0], true, [10,0,5]);
+
+	addModelToWorld(world,"box_down",[0,0,0], true);
+	world.createShape({
+		position: [0, 0, 0],
+		size: [10, .5, 15],
+		geometry: "BoxBufferGeometry",
+		rigidBody: true,
+		mass: 0,
+	});
+
+	// Back
 	addModelToWorld(world,"box_back",[-5.5,0,0.5],true);
+	world.createShape({
+		position: [-5, 0, 0],
+		size: [0.5, 10, 15],
+		geometry: "BoxBufferGeometry",
+		rigidBody: true,
+		mass: 0,
+	});
+
+	// Front
 	addModelToWorld(world,"box_front",[4,0,0.5],true);
+	world.createShape({
+		position: [5, 0, 0],
+		size: [0.5, 10, 15],
+		geometry: "BoxBufferGeometry",
+		rigidBody: true,
+		mass: 0,
+	});
+
+	// Left
 	addModelToWorld(world, "box_left", [0,0,-7],true);
+	world.createShape({
+		position: [0, 0, -7],
+		size: [10, 10, 0.5],
+		geometry: "BoxBufferGeometry",
+		rigidBody: true,
+		mass: 0,
+	});
+
+	// Right
 	addModelToWorld(world,"box_right", [0,0,7.5],true);
-	
+	world.createShape({
+		position: [0, 0, 7.5],
+		size: [10, 10, 0.5],
+		geometry: "BoxBufferGeometry",
+		rigidBody: true,
+		mass: 0,
+	});
 }
 
 /**
@@ -109,15 +151,13 @@ export function createPlate(world, radius = 10) {
  * @param isStatic
  * @param size
  */
-export function addModelToWorld(world, filename, position = [0, 0, 0],  isStatic, size = [2, 2, 2]) {
+export function addModelToWorld(world, filename, position = [0, 0, 0],  isStatic) {
 	loadModel(world.loader, `/models/${filename}.glb`)
 		.then(model => {
 			model.scale.set(1, 1, 1);
 			model.position.set(...position);
 			world.scene.add(model);
-			console.log(model.);
-			//console.log(model.size().z);
-			modelPhysicBody(world.physicsWorld, model, isStatic,[model.size().x,model.size().y,model.size().z]);
+			modelPhysicBody(world.physicsWorld, model,[2,2,2], isStatic);
 			world.rigidBodies.push(model);
 		});
 }
