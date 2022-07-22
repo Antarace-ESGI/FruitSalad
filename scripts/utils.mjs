@@ -138,6 +138,13 @@ export function createPlate(world, radius = 10) {
 		rigidBody: true,
 		mass: 0,
 	});
+	
+	addModelToWorld(world,"box_down",[0,0,0]);
+	addModelToWorld(world,"box_back",[0,1,-6]);
+	addModelToWorld(world,"box_front",[0,1,6]);
+	addModelToWorld(world, "box_left", [6,1,0]);
+	addModelToWorld(world,"box_right", [-6,1,0]);
+	
 }
 
 /**
