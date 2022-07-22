@@ -14,7 +14,7 @@ function startScene() {
 		// Register events
 		click("#strawberry", addSlice, "strawberry", 0.25, plateSize, world);
 		click("#banana", addSlice, "banana", 0.5, plateSize, world);
-		click("#kiwi", addSlice, "kiwi", 0.75, plateSize, world, 2);
+		click("#kiwi", addSlice, "kiwi", 0.75, plateSize, world);
 	});
 }
 
