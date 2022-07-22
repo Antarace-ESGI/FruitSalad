@@ -8,9 +8,6 @@ function startScene() {
 		Ammo = AmmoLib;
 		init();
 
-		document.querySelector("#plateSelector").style.display = "none";
-		document.querySelector("#compositor").style.display = "block";
-
 		// Register events
 		click("#strawberry", addSlice, "strawberry", 0.25, plateSize, world);
 		click("#banana", addSlice, "banana", 0.5, plateSize, world);
@@ -18,8 +15,9 @@ function startScene() {
 	});
 }
 
+const canvas = document.getElementById("threejs");
+
 function init() {
-	const canvas = document.getElementById("threejs");
 	world = new World(canvas);
 
 	// Register resize event
@@ -46,20 +44,6 @@ function init() {
 	requestAnimationFrame(animate);
 }
 
-click("#small", () => {
-	plateSize = 10;
-	updatePriceDisplay(5);
-	startScene();
-});
-
-click("#medium", () => {
-	plateSize = 20;
-	updatePriceDisplay(7.5);
-	startScene();
-});
-
-click("#large", () => {
-	plateSize = 30;
-	updatePriceDisplay(10);
-	startScene();
-});
+plateSize = 10;
+updatePriceDisplay(5);
+startScene();

@@ -147,6 +147,17 @@ export function createPlate(world, radius = 10) {
 		mass: 0,
 		opacity: 0,
 	});
+
+	// floor
+	world.createShape({
+		position: [0, -5.1, 0],
+		size: [100, 10, 100],
+		image: "textures/bowl.png",
+		geometry: "BoxBufferGeometry",
+		rigidBody: true,
+		mass: 0,
+		opacity: 1,
+	});
 }
 
 /**
@@ -198,8 +209,6 @@ export function updatePriceDisplay(amount) {
  */
 export function addSlice(fruit, price, plateSize, world, slices = 3) {
 	const randomIndex = Math.floor(Math.random() * slices + 1);
-	const x = Math.random() * plateSize - plateSize / 2 - 1;
-	const y = Math.random() * plateSize - plateSize / 2 - 1;
-	addModelToWorld(world, `${fruit}_slice_${randomIndex}`, [x, 5, y], true);
+	addModelToWorld(world, `${fruit}_slice_${randomIndex}`, [0, 15, 0], false);
 	updatePriceDisplay(price);
 }

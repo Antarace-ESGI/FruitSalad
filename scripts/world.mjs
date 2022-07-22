@@ -30,6 +30,7 @@ export class World {
 		this.renderer.outputEncoding = THREE.sRGBEncoding;
 
 		// Add the renderer element to webpage
+		this.container = document.querySelector(".compositor");
 		canvas.parentElement.appendChild(this.renderer.domElement);
 
 		this.controls = new OrbitControls(this.camera, this.renderer.domElement);
@@ -81,11 +82,11 @@ export class World {
 	}
 
 	onWindowResize() {
-		this.camera.aspect = window.innerWidth / window.innerHeight;
+		this.camera.aspect = this.container.offsetWidth / this.container.offsetHeight;
 		this.camera.updateProjectionMatrix();
 
-		this.renderer.setSize(window.innerWidth, window.innerHeight);
-	}
+		this.renderer.setSize(this.container.offsetWidth, this.container.offsetHeight);
+}
 
 	/**
 	 * Function called on each frame
