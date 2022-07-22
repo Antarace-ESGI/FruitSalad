@@ -62,3 +62,9 @@ select {
     width: 64px;
     height: 64px;
 }
+
+#fullscreen {
+    width: 24px;
+    height: 24px;
+    padding: 0;
+}
