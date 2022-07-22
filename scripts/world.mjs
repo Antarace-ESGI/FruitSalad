@@ -1,7 +1,7 @@
 import * as THREE from '../threejs/three.module.js';
-import {ColladaLoader} from '../threejs/jsm/loaders/ColladaLoader.js';
 import {OrbitControls} from "../threejs/jsm/controls/OrbitControls.js";
 import {createRigidBody} from "./utils.mjs";
+import {GLTFLoader} from "../threejs/jsm/loaders/GLTFLoader.js";
 
 export class World {
 	/**
@@ -46,7 +46,7 @@ export class World {
 		this.camera.add(this.listener);
 
 		// Collada loader
-		this.loader = new ColladaLoader();
+		this.loader = new GLTFLoader();
 
 		// Audio loader
 		this.audioLoader = new THREE.AudioLoader();

@@ -44,10 +44,10 @@ export function createRigidBody(physicsWorld, threeObject, physicsShape, mass, p
 
 /**
  * Create and add a new model to the scene
- * @param {ColladaLoader} loader
+ * @param {GLTFLoader} loader
  * @param {string} file File path to the .dae file
  */
-export function createCollada(loader, file) {
+export function loadModel(loader, file) {
 	return new Promise(resolve => {
 		loader.load(file, collada => {
 			const model = collada.scene;
@@ -67,13 +67,13 @@ export function createCollada(loader, file) {
 
 /**
  * Create a new physic body for a collada
- * @param collada
+ * @param model
  * @param size
  * @returns {*}
  */
-export function colladaPhysicBody(physicsWorld, collada, size, isStatic = false) {
+export function modelPhysicBody(physicsWorld, model, size, isStatic = false) {
 	// Physic body
-	const position = new THREE.Vector3(collada.position.x, collada.position.y, collada.position.z);
+	const position = new THREE.Vector3(model.position.x, model.position.y, model.position.z);
 	const target = new THREE.Vector3(...size);
 	const quaternion = new THREE.Quaternion(0, 0, 0, 1);
 
@@ -83,7 +83,7 @@ export function colladaPhysicBody(physicsWorld, collada, size, isStatic = false)
 	const shape = new Ammo.btBoxShape(new Ammo.btVector3(target.x * 0.5, target.y * 0.5, target.z * 0.5));
 	shape.setMargin(0);
 
-	return createRigidBody(physicsWorld, collada, shape, (isStatic == false) ? 1 : 0, position, quaternion);
+	return createRigidBody(physicsWorld, model, shape, (isStatic == false) ? 1 : 0, position, quaternion);
 }
 
 /**
@@ -154,13 +154,13 @@ export function createPlate(world, radius = 10) {
  * @param {number[]} position
  */
 export function addModelToWorld(world, filename, position = [0, 0, 0], isStatic = false) {
-	createCollada(world.loader, `/models/${filename}.dae`)
-		.then(collada => {
-			collada.scale.set(1, 1, 1);
-			collada.position.set(...position);
-			world.scene.add(collada);
-			colladaPhysicBody(world.physicsWorld, collada, [2, 2, 2], isStatic);
-			world.rigidBodies.push(collada);
+	loadModel(world.loader, `/models/${filename}.glb`)
+		.then(model => {
+			model.scale.set(1, 1, 1);
+			model.position.set(...position);
+			world.scene.add(model);
+			modelPhysicBody(world.physicsWorld, model, [2, 2, 2], isStatic);
+			world.rigidBodies.push(model);
 		});
 }
 
@@ -189,9 +189,10 @@ export function updatePriceDisplay(amount) {
  * @param {number} price Price of the slice of fruit
  * @param {number} plateSize Size of the place selected
  * @param {World} world World to add the slice in
+ * @param {number} slices Amount of slices
  */
-export function addSlice(fruit, price, plateSize, world) {
-	const randomIndex = Math.floor(Math.random() * 3 + 1);
+export function addSlice(fruit, price, plateSize, world, slices = 3) {
+	const randomIndex = Math.floor(Math.random() * slices + 1);
 	const x = Math.random() * plateSize - plateSize / 2 - 1;
 	const y = Math.random() * plateSize - plateSize / 2 - 1;
 	addModelToWorld(world, `${fruit}_slice_${randomIndex}`, [x, 5, y]);
