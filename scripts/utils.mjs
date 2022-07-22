@@ -181,9 +181,10 @@ export function updatePriceDisplay(amount) {
  * @param {number} price Price of the slice of fruit
  * @param {number} plateSize Size of the place selected
  * @param {World} world World to add the slice in
+ * @param {number} slices Amount of slices
  */
-export function addSlice(fruit, price, plateSize, world) {
-	const randomIndex = Math.floor(Math.random() * 3 + 1);
+export function addSlice(fruit, price, plateSize, world, slices) {
+	const randomIndex = Math.floor(Math.random() * slices + 1);
 	const x = Math.random() * plateSize - plateSize / 2 - 1;
 	const y = Math.random() * plateSize - plateSize / 2 - 1;
 	addModelToWorld(world, `${fruit}_slice_${randomIndex}`, [x, 5, y]);
