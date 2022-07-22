@@ -44,10 +44,10 @@ export function createRigidBody(physicsWorld, threeObject, physicsShape, mass, p
 
 /**
  * Create and add a new model to the scene
- * @param {ColladaLoader} loader
+ * @param {GLTFLoader} loader
  * @param {string} file File path to the .dae file
  */
-export function createCollada(loader, file) {
+export function loadModel(loader, file) {
 	return new Promise(resolve => {
 		loader.load(file, collada => {
 			const model = collada.scene;
@@ -67,13 +67,13 @@ export function createCollada(loader, file) {
 
 /**
  * Create a new physic body for a collada
- * @param collada
+ * @param model
  * @param size
  * @returns {*}
  */
-export function colladaPhysicBody(physicsWorld, collada, size) {
+export function modelPhysicBody(physicsWorld, model, size) {
 	// Physic body
-	const position = new THREE.Vector3(collada.position.x, collada.position.y, collada.position.z);
+	const position = new THREE.Vector3(model.position.x, model.position.y, model.position.z);
 	const target = new THREE.Vector3(...size);
 	const quaternion = new THREE.Quaternion(0, 0, 0, 1);
 
@@ -83,7 +83,7 @@ export function colladaPhysicBody(physicsWorld, collada, size) {
 	const shape = new Ammo.btBoxShape(new Ammo.btVector3(target.x * 0.5, target.y * 0.5, target.z * 0.5));
 	shape.setMargin(0);
 
-	return createRigidBody(physicsWorld, collada, shape, 1, position, quaternion);
+	return createRigidBody(physicsWorld, model, shape, 1, position, quaternion);
 }
 
 /**
@@ -146,12 +146,12 @@ export function createPlate(world, radius = 10) {
  * @param {number[]} position
  */
 export function addModelToWorld(world, filename, position = [0, 0, 0]) {
-	createCollada(world.loader, `/models/${filename}.dae`)
+	loadModel(world.loader, `/models/${filename}.glb`)
 		.then(collada => {
 			collada.scale.set(1, 1, 1);
 			collada.position.set(...position);
 			world.scene.add(collada);
-			colladaPhysicBody(world.physicsWorld, collada, [2, 2, 2]);
+			modelPhysicBody(world.physicsWorld, collada, [2, 2, 2]);
 			world.rigidBodies.push(collada);
 		});
 }
