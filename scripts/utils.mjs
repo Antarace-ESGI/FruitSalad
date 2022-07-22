@@ -101,6 +101,7 @@ export function createPlate(world, radius = 10) {
 		geometry: "BoxBufferGeometry",
 		rigidBody: true,
 		mass: 0,
+		opacity: 0,
 	});
 
 	// Back
@@ -111,6 +112,7 @@ export function createPlate(world, radius = 10) {
 		geometry: "BoxBufferGeometry",
 		rigidBody: true,
 		mass: 0,
+		opacity: 0,
 	});
 
 	// Front
@@ -121,6 +123,7 @@ export function createPlate(world, radius = 10) {
 		geometry: "BoxBufferGeometry",
 		rigidBody: true,
 		mass: 0,
+		opacity: 0,
 	});
 
 	// Left
@@ -131,6 +134,7 @@ export function createPlate(world, radius = 10) {
 		geometry: "BoxBufferGeometry",
 		rigidBody: true,
 		mass: 0,
+		opacity: 0,
 	});
 
 	// Right
@@ -141,6 +145,7 @@ export function createPlate(world, radius = 10) {
 		geometry: "BoxBufferGeometry",
 		rigidBody: true,
 		mass: 0,
+		opacity: 0,
 	});
 }
 
