@@ -71,7 +71,7 @@ export function createCollada(loader, file) {
  * @param size
  * @returns {*}
  */
-export function colladaPhysicBody(physicsWorld, collada, size) {
+export function colladaPhysicBody(physicsWorld, collada, size, isStatic = false) {
 	// Physic body
 	const position = new THREE.Vector3(collada.position.x, collada.position.y, collada.position.z);
 	const target = new THREE.Vector3(...size);
@@ -83,7 +83,7 @@ export function colladaPhysicBody(physicsWorld, collada, size) {
 	const shape = new Ammo.btBoxShape(new Ammo.btVector3(target.x * 0.5, target.y * 0.5, target.z * 0.5));
 	shape.setMargin(0);
 
-	return createRigidBody(physicsWorld, collada, shape, 1, position, quaternion);
+	return createRigidBody(physicsWorld, collada, shape, (isStatic == false) ? 1 : 0, position, quaternion);
 }
 
 /**
@@ -98,6 +98,7 @@ export function createPlate(world, radius = 10) {
 	const wallOffset = radius / 2 - wallThickness / 2;
 
 	// Create the bowl
+	/*
 	world.createShape({
 		position: [wallOffset, 0, 0],
 		size: [wallThickness, height, radius],
@@ -138,12 +139,12 @@ export function createPlate(world, radius = 10) {
 		rigidBody: true,
 		mass: 0,
 	});
-	
-	addModelToWorld(world,"box_down",[0,0,0]);
-	addModelToWorld(world,"box_back",[0,1,-6]);
-	addModelToWorld(world,"box_front",[0,1,6]);
-	addModelToWorld(world, "box_left", [6,1,0]);
-	addModelToWorld(world,"box_right", [-6,1,0]);
+	*/
+	addModelToWorld(world,"box_left",[0,0,0], true);
+	addModelToWorld(world,"box_back",[0,0,0],true);
+	addModelToWorld(world,"box_front",[0,0,0],true);
+	addModelToWorld(world, "box_left", [0,0,0],true);
+	addModelToWorld(world,"box_right", [0,0,0],true);
 	
 }
 
@@ -152,13 +153,13 @@ export function createPlate(world, radius = 10) {
  * @param {string} filename
  * @param {number[]} position
  */
-export function addModelToWorld(world, filename, position = [0, 0, 0]) {
+export function addModelToWorld(world, filename, position = [0, 0, 0], isStatic = false) {
 	createCollada(world.loader, `/models/${filename}.dae`)
 		.then(collada => {
 			collada.scale.set(1, 1, 1);
 			collada.position.set(...position);
 			world.scene.add(collada);
-			colladaPhysicBody(world.physicsWorld, collada, [2, 2, 2]);
+			colladaPhysicBody(world.physicsWorld, collada, [2, 2, 2], isStatic);
 			world.rigidBodies.push(collada);
 		});
 }
