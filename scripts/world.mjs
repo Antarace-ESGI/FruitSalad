@@ -86,7 +86,7 @@ export class World {
 		this.camera.updateProjectionMatrix();
 
 		this.renderer.setSize(this.container.offsetWidth, this.container.offsetHeight);
-}
+	}
 
 	/**
 	 * Function called on each frame
